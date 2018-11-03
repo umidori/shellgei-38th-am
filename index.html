@@ -29,6 +29,227 @@
 					### その３
 					#### 講師:USP友の会 鳥海秀一
 				</section>
+				<section data-markdown>
+					#### 講師： 鳥海秀一
+					* USP友の会の古参会員
+					* シェル芸勉強会午前の部をよく担当
+				</section>
+				<section data-markdown>
+					### その１の振り返り
+				</section>
+				<section data-markdown>
+					### なぜ文字コード？
+					* シェル芸で扱うのは主にテキストストリーム
+					* テキストストリームの構成要素は文字コード
+					* すなわち文字コードはシェル芸の基本
+					* 午前の部は初心者向き勉強会
+					* 初心者が勉強すべきなのは基本
+				</section>
+				<section data-markdown>
+					### 補足
+				</section>
+				<section data-markdown>
+					### 文字コードを学ぶ利点
+					* ずっと役に立つ知識が手に入る
+					* コマンドの使い方を学ぶ素材として優れいてる
+						* 文字コードは単なる整数値
+						* データセットが既に登録済
+						* 結果を文字（フォント）としてすぐに確認できる
+				</section>
+				<section data-markdown>
+					### 文字コードとは
+					* 文字集合の各文字に対応する符号を一意に定めたもの
+					* 文字の識別子としての機能のみ扱う
+					* 扱う文字集合の違いやその他の理由により様々な文字コードが存在する
+				</section>
+				<section data-markdown>
+					### 解説したコマンド
+					* locale
+					* iconv
+					* 文字→数値変換コマンド
+					* 数値→文字変換コマンド
+					* 基数変換コマンド
+				</section>
+				<section data-markdown>
+					### その２の振り返り
+				</section>
+				<section data-markdown>
+					### 取り上げた文字コード
+					* EBCDICコード
+					* ASCIIコード
+					* ISO/IEC 646
+					* ISO/IEC 2022
+					* ISO/IEC 8859
+					* JIS X 0201
+					* JIS X 0208
+					* EUC_JP
+				</section>
+				<section data-markdown>
+					### 主にシェルでコードを弄ぶ
+					* 例：EBCDICで文字化けを起こす
+						* echo ｼｭｰﾜ | iconv -f utf-8 -t cp930 | iconv -f cp939 -t utf-8
+					* 例：ASCIIコード表 
+						* tabs -3
+						* for((i=2;i&lt;16;i++));do printf '\t%02X' $(( i\*16));done;echo;for((j=0;j&lt;16;j++));do printf '%02X' $j;for((i=2;i&lt;16;i++));do printf '\t';printf '%02X' $((i*16+j))|xxd -p -r|iconv -f ascii -t utf8 -c;done;echo;done
+				</section>
+				<section data-markdown>
+					## 以上
+				</section>
+				<section data-markdown>
+					### シェルで文字コードに触れてみる
+					### その３
+				</section>
+				<section data-markdown>
+					### 参考文献
+					* プログラマのための文字コード技術入門（技術評論社）
+					* ユニコード戦記（電機大出版局）
+				</section>
+				<section data-markdown>
+					### アジェンダ
+					* シフトJISコード解説
+					* 休憩
+					* Unicode解説
+				</section>
+				<section data-markdown>
+					### シフトJISコードとは
+					* JIS X 0201の8ビット符号の隙間にJIS X 0208を変形のうえ押し込んだ文字コード
+					* 日本語用文字コードとしてパソコンにおいて圧倒的に普及した
+					* 実装ベンダが機種依存の拡張を施していることが多く、その部分に関してはデータ交換可能性が低い
+					* 2バイト文字のコードはJIS漢字コード規格の区点番号に煩雑な計算を行うことで求める
+					* 2バイト文字の２バイト目の範囲が広いため、いわゆるダメ文字問題を引き起こす
+				</section>
+				<section data-markdown>
+					### 区点番号とは
+					* JIS漢字コード規格で使用する文字を列挙した表における文字の位置を10進数で示したもの
+					* 表は縦94×横94の区画で構成され、縦の位置を「区」、横の位置を「点」と呼ぶ
+					* 区、点はそれぞれ1〜94の整数で表す
+				</section>
+				<section data-markdown>
+					### 区点番号からのコードの算出式
+					#### （シフトJIS以外）
+					* JIS X 0208
+						* 区と点それぞれに0x20を加算し、それを文字コードの上位バイト、下位バイトとする
+					* EUC_JP
+						* 区と点それぞれに0xA0を加算し、それを文字コードの上位バイト、下位バイトとする
+				</section>
+				<section data-markdown>
+					### 区点番号からのコードの算出式
+					#### （シフトJIS）
+					* 上位バイト
+						* 1≦区≦62のとき、(区-1)÷2+0x81
+						* 1≦区≦94のとき、(区-1)÷2+0xC1
+					* 下位バイト
+						* 区が奇数の場合
+							* 1≦点≦63のとき、点+0x3F
+							* 1≦点≦94のとき、点+0x40
+						* 区が偶数の場合
+							* 点+０x9E
+				</section>
+				<section data-markdown>
+					### JIS X 0201の8ビット符号の隙間をみる
+					* tabs -3
+					* for((i=2;i&lt;16;i++));do printf '\t%02X' $(( i\*16));done;echo;for((j=0;j&lt;16;j++));do printf '%02X' $j;for((i=2;i&lt;16;i++));do printf '\t';printf '%02X' $((i*16+j))|xxd -p -r|iconv -f JIS_X0201 -t utf8 -c;done;echo;done
+				</section>
+				<section data-markdown>
+					### 計算式をAWKで表現
+					* echo  1 1 | awk '{printf("%02X %02X\n",($1-1)/2+($1&lt;63?0x81:0xc1),$2+($1%2?$2&lt;64?0x3F:0x40:0x9E))}'
+				</section>
+				<section data-markdown>
+					### 計算式の正誤を確認
+					* printf シェル芸勉強会午前の部 | iconv -f utf-8 -t eucjp | xxd -p -u | fold -2 | sed 's/$/-A0/' | { echo ibase=16; cat; } | bc | xargs -n2 | awk '{printf("%02X %02X\n",($1-1)/2+($1&lt;63?0x81:0xc1),$2+($1%2?$2&lt;64?0x3F:0x40:0x9E))}' | xxd -p -r | iconv -f sjis -t utf-8;echo
+				</section>
+				<section data-markdown>
+					### さまざまなシフトJIS
+					* Shift_JIS(SJIS)
+					* NEC独自拡張Shift_JIS
+					* IBM独自拡張Shift_JIS(CP942)
+					* マイクロソフト標準Shift_JIS(CP932)
+					* アップル独自拡張Shift_JIS
+					* JIS X 0213ベースの拡張Shitf_JIS(SHIFT_JISX0213)
+				</section>
+				<section data-markdown>
+					### CP932とSJISの違いを確認
+					* echo {1..94}' '{1..94} | xargs printf '%d %d\n' | awk '{printf("%d %d %02X%02X\n",$1,$2,($1-1)/2+($1&lt;63?0x81:0xc1),$2+($1%2?$2&lt;64?0x3:f0x40:0x9e))}' | while read k t c; do printf "%s %s %s " $k $t $c;echo $c|xxd -p -r|iconv -f sjis -t utf8  2>/dev/null || printf '??';printf ' ';echo $c|xxd -p -r|iconv -f cp932 -t utf8 2>/dev/null||printf '??';echo;done | awk '$4!=$5'
+				</section>
+				<section data-markdown>
+					### ダメ文字問題
+					* シフトJISの2バイト目が処理系にとって特殊な意味をもつ文字の俗称
+					* 文字化け、検索不可などのさまざまな不具合の原因となってきた
+					* シェルでは2バイト目が0x5C(\\)、０x7C(|)などの文字が相当する
+				</section>
+				<section data-markdown>
+					### ダメ文字を表示する
+					* for((k=1;k&lt;=94;k+=2));do t=29;printf '%02d %02d ' $k $t; echo $k $t | awk '{printf("%02X%02X\n",($1-1)/2+($1&lt;63?0x81:0xc1),$2+($1%2?$2&lt;64?0x3f:f0x40:0x9e))}'|xxd -p -r|iconv -f sjis -t utf-8 2>/dev/null;echo;done
+					* for((k=1;k&lt;=94;k+=2));do t=61;printf '%02d %02d ' $k $t; echo $k $t | awk '{printf("%02X%02X\n",($1-1)/2+($1&lt;63?0x81:0xc1),$2+($1%2?$2&lt;64?0x3f:f0x40:0x9e))}'|xxd -p -r|iconv -f sjis -t utf-8 2>/dev/null;echo;done
+				</section>
+				<section data-markdown>
+					### ダメ文字を試してみる
+					* echo 構わない
+					* echo 芸能界
+				</section>
+				<section data-markdown>
+					### 休憩
+				</section>
+				<section data-markdown>
+					### Unicodeとは(その１)
+					* 世界中の文字を1つの文字集合に収める目的で作られた文字コード
+					* 同じような目的でISOが企画したISO/IEC 10646と1990年代に合流
+				</section>
+				<section data-markdown>
+					### Unicodeとは(その２)
+					* 当初、IEC 10646は31ビットで1文字を表すことを企画し、Unicodeは16ビットで1文字を表すことを企画した
+					* IEC 10646がUnicodeに合流した際に、16ビットで1文字を表すことに統一した
+					* 但し、16ビットに収める案はすぐに破綻し、後に0x000000〜0x10FFFF(欠番あり)の21ビットの文字空間をもつコードとなった
+					* 16ビットで表現可能な領域のことを基本多言語面、それ以外を追加多言語面と呼ぶ
+				</section>
+				<section data-markdown>
+					### Unicodeの歴史
+					|年月|バージョン|トピック|
+					|:-|:-|:-|
+					|1991/10|Unicode1.0.0|16ビットの文字コード|
+					|1992/06|Unicode1.0.1|CKJ統合漢字を導入|
+					|1993/06|Unicode1.1.0|ISO/IEC 10646と合流|
+					|1996/07|Unicode2.0.0|領域を21ビットに拡張|
+					|2002/03|Unicode3.2.0|JIS X 0213に正式対応|
+					|2010/10|Unicode6.0.0|絵文字導入|
+					|2017/06|Unicode10.0.0||
+				</section>
+				<section data-markdown>
+					### Unicodeの制定時の有名なトッピック
+					* ハングル大移動
+					* クメール問題
+				</section>
+				<section data-markdown>
+					### ハングル大移動
+					* Unicode1.1に収録されたハングル文字が韓国の抗議により、新たな領域に収録され直されたことをいう
+					* 移動前は6656文字を収録していたが、移動後は11172文字に収録し直した
+					* これにより基本多言語面の約17%を一国の文字が占めることとなった
+					* Unicode技術委員会は「この過ちを2度と繰り返さない」と決意したらしい
+				</section>
+				<section data-markdown>
+					### クメール問題
+					* Unicodeに収録したクメール文字の文字コードにカンボジアが抗議した事態のことをいう
+					* 抗議の内容は次の通り
+						* 主にカンボジアで使われる文字のコードがカンボジアの国家代表者の参画なしに決められたこと
+						* カンボジアの文字文化にとって重要な脚文字が直接符号化されていないこと
+						* 実用上全く用いられていない文字が収録されている一方、必要な文字が収録されていないこと
+				</section>
+				<section data-markdown>
+					### クメール問題の顛末
+					* コードの変更は一切行われなかった
+					* ユニコードコンソーシアムとして遺憾の意を表す手紙をカンボジア側に送った
+					* 不要な文字の使用を抑制するコメントをUnicodeに追加した
+					* 必要な文字の追加を行った
+				</section>
+				<section data-markdown>
+					### 今回はここまで
+				</section>
+				<section data-markdown>
+					### 次回最終回です
+				</section>
+				<section data-markdown>
+					### ご静聴ありがとうございました
+				</section>
 			</div>
 		</div>
 		<script src="lib/js/head.min.js"></script>
